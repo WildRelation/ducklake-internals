@@ -1,5 +1,7 @@
 # Nästa steg — DuckLake Dataset Hub
 
+> **Förkrav:** Dataset Hub förutsätter att studenter kan nå `ducklake-catalog` och `ducklake-garage` direkt från sina egna deployments. Det är för tillfället inte möjligt på cbhcloud på grund av NetworkPolicy-begränsningar. Se [arkitektur.md](../arkitektur.md#nuvarande-begränsning--studenter-kan-inte-nå-ducklake-från-egna-deployments) för detaljer och planerad lösning.
+
 En Kaggle-liknande plattform där studenter kan ladda upp egna datasets, välja om de ska vara publika eller privata, och se varandras publika datasets.
 
 ---

@@ -82,3 +82,17 @@ cbhcloud (Kubernetes) tillåter bara trafik mellan deployments på den port som 
 - allt annat → port 3905 (S3 API, omflyttad från 3900)
 
 Se [garage-cbhcloud-quickstart](https://github.com/wildrelation/garage-cbhcloud-quickstart) för hur Garage-deploymentet är konfigurerat.
+
+---
+
+## Nuvarande begränsning — studenter kan inte nå DuckLake från egna deployments
+
+**Status (april 2026):** cbhcloud har en NetworkPolicy som fungerar som en ACL — ett deployment kan bara nå sina **egna** deployments, inte andras. Det innebär att en students deployment inte kan nå `ducklake-catalog` (PostgreSQL) eller `ducklake-garage` (S3) direkt, eftersom de ägs av oss.
+
+Det här är anledningen till att DuckDB-scriptet för tillfället kräver att studenten kör det från ett deployment som tillhör **oss**, inte deras egna konton.
+
+**Planerad lösning från cbhcloud-supporten:** PostgreSQL ska sättas upp som en **systemtjänst** via ett Helm chart — en speciell typ av deployment som är nåbar från alla användares deployments, inte bara ägarens. Det kommer troligen inte att ske via molnets gränssnitt utan kräver att cbhcloud-teamet gör det på infrastrukturnivå.
+
+> Källa: cbhcloud-supporten (philipzi), 2026-04-29. Citat: *"Min tanke är att vi sätter upp en postgres som inte kräver en SSH tunnel, då kommer även den vara nåbar från andra deployments. Men detta kommer troligen sättas upp som en system tjänst isf via typ en helm chart."*
+
+När detta är på plats kan studenter köra DuckDB-scriptet direkt från sina egna JupyterLab- eller Python-deployments utan SSH-tunnlar eller mellanhänder.
