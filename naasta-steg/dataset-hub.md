@@ -87,6 +87,21 @@ s3://ducklake-datasets/
 
 ---
 
+## Totalt antal deployments
+
+När Dataset Hub är byggt kommer infrastrukturen bestå av 4 deployments:
+
+| Deployment | Vad |
+|------------|-----|
+| `ducklake-catalog` | PostgreSQL — DuckLake-katalog + ägarskapsregister |
+| `ducklake-garage` | Garage S3 — lagrar Parquet-filer |
+| `ducklake-access-manager` | Credential-tjänst — genererar nycklar till studenter |
+| `ducklake-dataset-hub` | Kaggle-liknande plattform för att dela datasets |
+
+Keycloak räknas inte — det är KTH:s befintliga tjänst som vi ansluter till.
+
+---
+
 ## Vad kan återanvändas från ducklake-access-manager?
 
 | Del | Kan återanvändas |
