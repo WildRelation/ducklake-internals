@@ -89,7 +89,7 @@ Se [garage-cbhcloud-quickstart](https://github.com/wildrelation/garage-cbhcloud-
 
 **Status (april 2026):** cbhcloud har en NetworkPolicy som fungerar som en ACL — ett deployment kan bara nå sina **egna** deployments, inte andras. Det innebär att en students deployment inte kan nå `ducklake-catalog` (PostgreSQL) eller `ducklake-garage` (S3) direkt, eftersom de ägs av oss.
 
-Det här är anledningen till att DuckDB-scriptet för tillfället kräver att studenten kör det från ett deployment som tillhör **oss**, inte deras egna konton.
+Det här påverkar **inte** tjänster som Dataset Hub där studenten interagerar via ett webbgränssnitt — backenden i Dataset Hub når Garage, inte studentens deployment. Begränsningen gäller bara när en student vill köra DuckDB eller Python **direkt mot Garage** från sitt eget JupyterLab- eller Python-deployment.
 
 **Planerad lösning från cbhcloud-supporten:** PostgreSQL ska sättas upp som en **systemtjänst** via ett Helm chart — en speciell typ av deployment som är nåbar från alla användares deployments, inte bara ägarens. Det kommer troligen inte att ske via molnets gränssnitt utan kräver att cbhcloud-teamet gör det på infrastrukturnivå.
 

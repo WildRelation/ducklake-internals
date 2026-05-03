@@ -1,6 +1,8 @@
 # Nästa steg — DuckLake Dataset Hub
 
-> **Förkrav:** Dataset Hub förutsätter att studenter kan nå `ducklake-catalog` och `ducklake-garage` direkt från sina egna deployments. Det är för tillfället inte möjligt på cbhcloud på grund av NetworkPolicy-begränsningar. Se [arkitektur.md](../arkitektur.md#nuvarande-begränsning--studenter-kan-inte-nå-ducklake-från-egna-deployments) för detaljer och planerad lösning.
+> **Notering om begränsning:** Dataset Hub som uppladdnings- och delningsplattform kan byggas och användas redan nu. Studenter kan ladda upp, dela och ladda ner datasets via webbgränssnittet — det sker genom Dataset Hub-backenden, inte direkt från studentens deployment.
+>
+> Det som **inte** fungerar ännu är att studenter kör DuckDB eller Python mot sina Parquet-filer direkt från sina egna JupyterLab-deployments. Det kräver att deras deployment kan nå Garage, vilket blockeras av cbhclouds NetworkPolicy. Se [arkitektur.md](../arkitektur.md#nuvarande-begränsning--studenter-kan-inte-nå-ducklake-från-egna-deployments) för detaljer och planerad lösning.
 
 En Kaggle-liknande plattform där studenter kan ladda upp egna datasets, välja om de ska vara publika eller privata, och se varandras publika datasets.
 
