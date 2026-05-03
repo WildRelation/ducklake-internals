@@ -34,6 +34,9 @@ Det här repot förklarar hur hela infrastrukturen fungerar — varje komponent,
 - **[drift/deployment.md](drift/deployment.md)** — Bygga och driftsätta
 - **[drift/felsökning.md](drift/felsökning.md)** — Kända problem och lösningar
 
+### 5. Nästa steg
+- **[naasta-steg/dataset-hub.md](naasta-steg/dataset-hub.md)** — Plan för DuckLake Dataset Hub: Kaggle-liknande plattform där studenter laddar upp och delar datasets
+
 ---
 
 ## Relaterade repon
