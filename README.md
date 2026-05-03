@@ -14,6 +14,9 @@ Det här repot förklarar hur hela infrastrukturen fungerar — varje komponent,
 
 ## Innehåll
 
+### 0. Ordlista
+**[ordlista.md](ordlista.md)** — Förklaringar av begrepp: AWS, S3, S3-nyckel, bucket, token, Bearer, port, UUID, realm, m.m.
+
 ### 1. Arkitektur
 **[arkitektur.md](arkitektur.md)** — Helhetsbilden. Hur alla delar hänger ihop.
 
