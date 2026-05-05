@@ -19,6 +19,7 @@ Student klickar "Generate Key"
          ▼
 2. Kontrollera behörighet
    - "readwrite" kräver admin-roll → returnera 403 om inte admin
+   - Student utan grant på bucketen → returnera 403
          │
          ▼
 3. Skapa PostgreSQL-användare
@@ -30,6 +31,7 @@ Student klickar "Generate Key"
          ▼
 4. Skapa S3-nyckel i Garage
    - POST /v2/CreateKey  → får Key ID + Secret
+     (nyckelnamn: "key-{bucket}|{pgUsername}|{permission}")
    - GET  /v2/GetBucketInfo → hämtar bucket-ID
    - POST /v2/AllowBucketKey → ger nyckeln rätt behörighet
          │
@@ -50,10 +52,15 @@ Student klickar "Generate Key"
 
 | Endpoint | Vanlig student | Admin |
 |----------|---------------|-------|
-| Generera read-only nyckel | ✅ | ✅ |
+| Generera read-only nyckel | ✅ (kräver grant) | ✅ |
 | Generera read/write nyckel | ❌ 403 | ✅ |
 | Lista nycklar | Bara egna | Alla |
 | Radera nyckel | Bara egna | Alla |
+| Lista buckets | Bara tilldelade | Alla Garage-buckets |
+| Skapa/radera bucket | ❌ 403 | ✅ |
+| Hantera grants | ❌ 403 | ✅ |
+
+En student kan bara generera en nyckel om admin har gett hen en **grant** för den specifika bucketen. Utan grant returneras 403 även för read-behörighet.
 
 Admin-rollen sätts i Keycloak, se [keycloak.md](../komponenter/keycloak.md).
 

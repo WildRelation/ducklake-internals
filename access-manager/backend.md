@@ -7,19 +7,25 @@ Källkod: [ducklake-access-manager/src/main/java](https://github.com/wildrelatio
 ```
 api/                    ← REST-endpoints (vad omvärlden ser)
   KeyController.java    ← /api/keys/*
+  AdminController.java  ← /api/admin/** (bucket + grant-hantering, kräver admin)
+  BucketController.java ← /api/buckets (bucket-lista per användare)
   HealthController.java ← /healthz
 
 config/
-  SecurityConfig.java   ← vilka endpoints kräver inloggning
+  SecurityConfig.java   ← vilka endpoints kräver inloggning, isAdmin()
 
 service/                ← interfaces (kontrakt)
-  ObjectStoreAccessTokenManager.java
-  DatabaseAccessTokenManager.java
-  KeyMappingService.java
+  ObjectStoreAccessTokenManager.java  ← listBuckets, createBucket, deleteBucket,
+  │                                      createReadOnlyKey, createReadWriteKey,
+  │                                      deleteKey, listKeys
+  DatabaseAccessTokenManager.java     ← createReadOnlyUser, createReadWriteUser, deleteUser
+  KeyMappingService.java              ← saveMapping, findKeyIdsForUser, findOwner,
+                                         findDisplayNames, findCreatedAts
   impl/                 ← den faktiska koden
-    GarageAccessTokenManager.java    ← pratar med Garage
-    PostgresAccessTokenManager.java  ← pratar med PostgreSQL
+    GarageAccessTokenManager.java    ← Garage Admin API v2 (HTTP mot port 3900)
+    PostgresAccessTokenManager.java  ← JDBC: skapar/tar bort dl_ro_/dl_rw_-användare
     PostgresKeyMappingService.java   ← hanterar key_user_mapping
+    GrantService.java                ← hanterar student_grants (grant/revoke/hasGrant)
 
 infrastructure/garage/  ← dataklasser för Garage API-svar
   GarageKeyResponse.java
@@ -28,9 +34,11 @@ infrastructure/garage/  ← dataklasser för Garage API-svar
 
 model/                  ← dataklasser för vårt API
   AccessKey.java
+  Bucket.java
+  BucketGrant.java
   DbCredentials.java
   GeneratedCredentials.java
-  KeyListItem.java       ← används för GET /api/keys (inkl. createdBy)
+  KeyListItem.java       ← används för GET /api/keys (inkl. createdBy + createdAt)
   KeyRequest.java
 ```
 
@@ -136,8 +144,40 @@ jdbc.execute("""
 """);
 ```
 
-`findDisplayNames()` hämtar emails för en lista av nyckel-ID:n i en enda SQL-fråga (IN-clause) för att undvika N+1-problemet:
+`findDisplayNames()` och `findCreatedAts()` hämtar emails respektive skapandedatum för en lista av nyckel-ID:n i en enda SQL-fråga (IN-clause) för att undvika N+1-problemet:
 
 ```java
 "SELECT garage_key_id, display_name FROM key_user_mapping WHERE garage_key_id IN (?, ?, ...)"
+"SELECT garage_key_id, created_at   FROM key_user_mapping WHERE garage_key_id IN (?, ?, ...)"
 ```
+
+---
+
+## GrantService — bucket-tilldelningar per student
+
+`GrantService` hanterar tabellen `student_grants` och skapas automatiskt vid uppstart:
+
+```sql
+CREATE TABLE IF NOT EXISTS student_grants (
+    student_email VARCHAR NOT NULL,
+    bucket_name   VARCHAR NOT NULL,
+    granted_at    TIMESTAMP DEFAULT NOW(),
+    PRIMARY KEY (student_email, bucket_name)
+)
+```
+
+Bucket-listan hämtas direkt från Garage via `GET /v2/ListBuckets` — det finns ingen separat bucket-tabell i PostgreSQL. Grants kopplar studentens email till ett bucket-namn (inte ett UUID).
+
+---
+
+## Nyckelnamnsformatet
+
+Nyckelnamnet som skapas i Garage bäddar in metadata som behövs vid listning:
+
+```
+key-{bucketName}|{pgUsername}|{permission}
+```
+
+Exempel: `key-ducklake|dl_ro_a8f0d0a4|read`
+
+Garage `ListKeys` returnerar inte behörighet per nyckel — utan detta format skulle permission alltid visas som okänd i My Keys-vyn. Gamla nycklar utan permission-fält hanteras bakåtkompatibelt.

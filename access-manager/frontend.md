@@ -2,6 +2,18 @@
 
 Källkod: [ducklake-access-manager/src/main/resources/static/index.html](https://github.com/wildrelation/ducklake-access-manager/blob/main/src/main/resources/static/index.html)
 
+## Struktur
+
+Frontenden har tre flikar:
+
+| Flik | Vem ser den | Innehåll |
+|---|---|---|
+| **Buckets** | Alla | Buckets man har tillgång till. Generate Keys-knapp per bucket. Admin kan välja read/readwrite. |
+| **My Keys** | Alla | Aktiva nycklar. Visar Key ID, bucket, permission, skapad av (admin), datum. |
+| **Admin** | Bara admin | Bucket-hantering (skapa/radera i Garage) och grant-hantering (tilldela/återkalla per student). |
+
+---
+
 ## Hur frontenden är byggd
 
 Frontenden är **en enda HTML-fil** utan byggprocess (inget npm, inget webpack). React och Babel laddas direkt från CDN via `<script>`-taggar. Det gör det enkelt att ändra — öppna filen, redigera, bygg Docker-imagen.
@@ -61,14 +73,9 @@ sessionStorage.setItem('access_token', access_token);
 
 ---
 
-## localStorage vs sessionStorage
+## sessionStorage
 
-Frontenden använder **båda** för olika saker:
-
-| Vad | Var | Varför |
-|-----|-----|--------|
-| JWT access token | `sessionStorage` | Försvinner när fliken stängs — credentials ska inte ligga kvar |
-| Mapping keyId → pgUsername | `localStorage` | Behålls mellan sessioner — används om servern inte har pgUsername |
+Frontenden lagrar JWT access token i `sessionStorage` — det försvinner när fliken stängs så att credentials inte ligger kvar. `pgUsername` lagras inte längre i `localStorage` eftersom det nu bäddas in i nyckelnamnet på serversidan och returneras av `GET /api/keys`.
 
 ---
 
