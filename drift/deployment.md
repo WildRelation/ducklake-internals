@@ -8,10 +8,12 @@ Källkod: [ducklake-access-manager](https://github.com/wildrelation/ducklake-acc
 cd ducklake-access-manager
 
 # Bygg Docker-imagen (kompilerar Java-koden inuti containern)
-docker build --network=host -t ghcr.io/wildrelation/ducklake-access-manager:latest .
+# Använd alltid ny versionstagg — överskrivning av befintlig tag triggar
+# inte ny pull om noden har den cachad (imagePullPolicy: IfNotPresent)
+docker build --network=host -t ghcr.io/wildrelation/ducklake-access-manager:v13 .
 
 # Pusha till GitHub Container Registry
-docker push ghcr.io/wildrelation/ducklake-access-manager:latest
+docker push ghcr.io/wildrelation/ducklake-access-manager:v13
 ```
 
 > `--network=host` krävs på Linux om Docker inte kan skapa bridge-nätverk i din miljö.

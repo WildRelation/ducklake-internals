@@ -46,15 +46,15 @@ DuckLake är ett **data lake** — ett centralt ställe där kursdatasets lagras
        ↓
 4. Studenten klickar "Generate Key" — webbläsaren skickar token + begäran till access manager
        ↓
-5. Access manager skapar en PostgreSQL-användare (dl_ro_xxxxxxxx)
-       ↓
+5. Access manager skapar en PostgreSQL-användare i datasetets egna databas (dl_ro_xxxxxxxx)
+       ↓  ← misslyckas steg 6 eller 7: PG-användaren raderas automatiskt (rollback)
 6. Access manager skapar en S3-nyckel i Garage med rätt behörighet på bucketen
+       ↓  ← misslyckas steg 7: S3-nyckeln + PG-användaren raderas automatiskt (rollback)
+7. Access manager sparar (garage_key_id, keycloak_sub, email, pg_database) i key_user_mapping
        ↓
-7. Access manager sparar (garage_key_id, keycloak_sub, email) i key_user_mapping
+8. Access manager returnerar { s3Key, dbCredentials, duckdbScript, envFile } till studenten
        ↓
-8. Access manager returnerar ett färdigt DuckDB-script till studenten
-       ↓
-9. Studenten kör scriptet från sitt deployment på cbhcloud
+9. Studenten kör DuckDB-scriptet eller laddar .env-filen från sitt deployment på cbhcloud
 ```
 
 ---

@@ -4,13 +4,51 @@ Källkod: [ducklake-access-manager/src/main/resources/static/index.html](https:/
 
 ## Struktur
 
-Frontenden har tre flikar:
+Frontenden har fyra vyer:
 
-| Flik | Vem ser den | Innehåll |
+| Vy | Vem ser den | Innehåll |
 |---|---|---|
-| **Buckets** | Alla | Buckets man har tillgång till. Generate Keys-knapp per bucket. Admin kan välja read/readwrite. |
-| **My Keys** | Alla | Aktiva nycklar. Visar Key ID, bucket, permission, skapad av (admin), datum. |
-| **Admin** | Bara admin | Bucket-hantering (skapa/radera i Garage) och grant-hantering (tilldela/återkalla per student). |
+| **Browse** | Alla | Publika datasets + private man har access till. Sök, filtrera, generera nycklar. |
+| **My Keys** | Alla | Aktiva nycklar. Admin ser alla med Created By-kolumn. |
+| **Admin → Datasets** | Admin | Skapa/uppdatera/ta bort datasets (bucket + Postgres-DB skapas atomärt). |
+| **Admin → Groups** | Admin | Skapa grupper, lägg till/ta bort enskilda medlemmar, massimportera via textarea. |
+| **Admin → Grants** | Admin | Tilldela access: user (e-post), group (dropdown) eller @everyone. |
+
+---
+
+## Credentials-dialogen (CredModal)
+
+När en student genererar en nyckel visas en modal med:
+
+- **Råa credentials** — Key ID, Secret Key, PG-host, PG-databas, användarnamn, lösenord
+- **DuckDB-script** — redo att klistras in i DuckDB/JupyterLab, med Copy-knapp
+- **Download .env** — laddar ned en fil med standardiserade miljövariabelnamn:
+
+```bash
+# PostgreSQL — psycopg2, SQLAlchemy, libpq
+PGHOST=ducklake-catalog
+PGPORT=5432
+PGDATABASE=dl_titanic_2026
+PGUSER=dl_ro_xxxxxxxx
+PGPASSWORD=...
+
+# S3 — boto3, s3fs, DuckDB
+AWS_ACCESS_KEY_ID=GKxxxxxxxx
+AWS_SECRET_ACCESS_KEY=...
+AWS_DEFAULT_REGION=garage
+AWS_ENDPOINT_URL=http://ducklake-garage:3900
+S3_BUCKET=titanic-2026
+```
+
+Filen namnges `.env.<bucket-namn>` och laddas ned direkt i webbläsaren utan att skicka credentials till servern igen.
+
+> Secret Key visas bara i den här dialogen — Garage lagrar inte plaintext. Studenten måste kopiera eller ladda ned .env-filen innan dialogen stängs.
+
+---
+
+## Bulk member import (Admin → Groups)
+
+När admin expanderar en grupp visas en textarea för att klistra in en lista av e-postadresser (newline, komma eller semikolon som separator). Resultatet visas direkt: `✓ 24 added · 3 already members · 1 invalid`.
 
 ---
 
